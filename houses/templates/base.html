@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>House Listings</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -16,10 +16,10 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Navigation Bar -->
-    <nav class="bg-blue-500 p-4 text-white shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="{% url 'house_list' %}" class="text-2xl font-bold">🏡 House Listings</a>
+    <!-- Navigation Bar (Fixed at the Top) -->
+    <nav class="bg-blue-500 p-3 text-white shadow-md fixed w-full top-0 z-50">
+        <div class="max-w-screen-xl mx-auto flex justify-between items-center">
+            <a href="{% url 'house_list' %}" class="text-xl font-bold">🏡 House Listings</a>
 
             <ul class="flex space-x-4">
                 {% if user.is_authenticated %}
@@ -32,17 +32,16 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="w-full max-w-screen-xl mx-auto px-4 py-6">
+    <!-- Main Content (No Extra Margins) -->
+    <div class="w-full max-w-screen-xl mx-auto px-4 py-20">
         {% block content %}
         {% endblock %}
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white text-center p-4 mt-6 text-sm">
+    <footer class="bg-gray-800 text-white text-center p-4 text-sm">
         <p>© 2025 House Listings | Designed with ❤️</p>
     </footer>
 
 </body>
 </html>
-
