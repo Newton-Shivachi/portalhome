@@ -86,18 +86,24 @@ DATABASES = {
 }
 DATABASES['default'] = dj_database_url.parse('postgresql://homedb_qqz5_user:oe957Oz44Dx1niUxNZA34d6YeWCNlEKg@dpg-cv6lnpvnoe9s73c0bc7g-a/homedb_qqz5')
 
-CLOUDINARY_STORAGE = {
-    'cloud_name': 'dwct2o4di',
-    'api_key': '555444844995254',
-    'api_secret': 'WUbOG0GUVAtjBdyP39L6x_NX2rI',
-}
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Required for collectstatic
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+cloudinary.config(
+    cloud_name= 'dvg4cttcl',
+    api_key= '433563769388989',
+    api_secret= 'eJePBi_9nVmvSEpU9XoUXakqDkI'
+)
+
+
+CLOUDINARY_URL='cloudinary://433563769388989:eJePBi_9nVmvSEpU9XoUXakqDkI@dvg4cttcl'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-MEDIA_URL = 'https://res.cloudinary.com/%s/' %'dwct2o4di'
+MEDIA_URL = "https://res.cloudinary.com/dvg4cttcl/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
