@@ -87,9 +87,9 @@ DATABASES = {
 DATABASES['default'] = dj_database_url.parse('postgresql://homedb_qqz5_user:oe957Oz44Dx1niUxNZA34d6YeWCNlEKg@dpg-cv6lnpvnoe9s73c0bc7g-a/homedb_qqz5')
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dwct2o4di',
-    'API_KEY': 555444844995254,
-    'API_SECRET': 'WUbOG0GUVAtjBdyP39L6x_NX2rI',
+    'cloud_name': 'dwct2o4di',
+    'api_key': 555444844995254,
+    'api_secret': 'WUbOG0GUVAtjBdyP39L6x_NX2rI',
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
