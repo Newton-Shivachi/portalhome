@@ -88,7 +88,7 @@ DATABASES['default'] = dj_database_url.parse('postgresql://homedb_qqz5_user:oe95
 
 CLOUDINARY_STORAGE = {
     'cloud_name': 'dwct2o4di',
-    'api_key': 555444844995254,
+    'api_key': '555444844995254',
     'api_secret': 'WUbOG0GUVAtjBdyP39L6x_NX2rI',
 }
 
