@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-6 shadow-md rounded">
+    <h2 class="text-2xl font-bold mb-4">Add House</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ house_form.as_p }}
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+    </form>
+</div>
+{% endblock %}

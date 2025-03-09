@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-xl font-bold text-center my-4">Houses in {{ location }}</h2>
+
+<!-- Map Container -->
+<div id="map" style="height: 500px;"></div>
+
+<script>
+    var map = L.map('map').setView([0, 37], 8);  // Default Kenya view
+
+    // Add OpenStreetMap layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add house markers
+    var houses = {{ houses|safe }};  // This JSON will be from Django context
+
+    houses.forEach(house => {
+        L.marker([house.latitude, house.longitude])
+            .addTo(map)
+            .bindPopup(`<b>${house.name}</b><br>${house.description}`);
+    });
+</script>
+{% endblock %}

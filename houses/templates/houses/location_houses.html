@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-bold">Houses in {{ location }}</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% for house in houses %}
+        <div class="border p-4 shadow-md">
+            <img src="{{ house.house_images.first.image.url }}" alt="{{ house.name }}" class="w-full h-40 object-cover">
+            <h3 class="font-bold text-lg">{{ house.name }}</h3>
+            <p class="text-gray-600">{{ house.description }}</p>
+            <a href="{% url 'house_detail' house.id %}" class="text-blue-500">View Details</a>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
