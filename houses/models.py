@@ -13,6 +13,7 @@ class House(models.Model):
     contact = models.CharField(max_length=20)
     is_taken = models.BooleanField(default=False)
     video = CloudinaryField('house_video', resource_type='video', blank=True, null=True)
+    rent = models.CharField(max_length=255)
     def __str__(self):
         return self.name
 
@@ -60,7 +61,7 @@ class Payment(models.Model):
 
         if data.get("status") and data["data"]["status"] == "success":
             self.status = "success"
-            self.expires_on = now() + timedelta(days=14)  # ✅ Update expiration only if successful
+            self.expires_on = now() + timedelta(days=1)  # ✅ Update expiration only if successful
             self.save()
             return True
         else:
