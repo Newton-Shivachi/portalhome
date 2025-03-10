@@ -111,7 +111,7 @@ def add_house_images(request, house_id):
 @login_required
 def initiate_payment(request, location):
     user = request.user
-    amount = 5  # Amount in currency
+    amount = 150  # Amount in currency
     reference = str(uuid.uuid4())
 
     # Check if user already has a valid payment
