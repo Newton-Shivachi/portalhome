@@ -6,6 +6,7 @@ from django.conf import settings
 from cloudinary.models import CloudinaryField
 class House(models.Model):
     name = models.CharField(max_length=255)
+    rent = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
