@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-DATABASES['default'] = dj_database_url.parse('postgresql://homedb_qqz5_user:oe957Oz44Dx1niUxNZA34d6YeWCNlEKg@dpg-cv6lnpvnoe9s73c0bc7g-a/homedb_qqz5')
+DATABASES['default'] = dj_database_url.parse('postgresql://homedb_qqz5_user:oe957Oz44Dx1niUxNZA34d6YeWCNlEKg@dpg-cv6lnpvnoe9s73c0bc7g-a.oregon-postgres.render.com/homedb_qqz5')
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Required for collectstatic
