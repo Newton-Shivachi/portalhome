@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-puy0&%g%r_0f9o&2(a!$#%b5_bq)4!yz_g&a4tboxw4i55@8*6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['homeportal.onrender.com','homeportalkenya.vercel.app']
+ALLOWED_HOSTS = ['homeportal.onrender.com','homeportalken.vercel.app']
 
 
 # Application definition
