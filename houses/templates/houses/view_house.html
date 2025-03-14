@@ -7,57 +7,52 @@
     <p class="text-gray-700 mt-2 text-center max-w-lg">{{ house.description }}</p>
     <p class="text-gray-700 mt-2 text-center max-w-lg">{{ house.rent }}</p>
 
-    <!-- Image Carousel -->
+    <!-- Click to View More -->
+    <p class="text-blue-500 font-semibold mt-4 cursor-pointer" onclick="openSlider()">
+        Click to see more images
+    </p>
+
+    <!-- Thumbnail Image (Opens Full-Screen Slider) -->
     {% if images %}
-    <div class="image-carousel mt-6 flex flex-col items-center w-full">
+    <div class="mt-6 flex flex-col items-center w-full">
         <div class="relative w-full max-w-xs sm:max-w-md md:max-w-2xl">
-            <img id="house-img" 
-                 src="{{ images.0.image.url|add:'?f_auto,q_auto,w_800' }}" 
+            <img src="{{ images.0.image.url|add:'?f_auto,q_auto,w_800' }}" 
                  alt="House Image" 
-                 class="w-full h-94 sm:h-80 md:h-[450px] object-cover rounded-lg shadow-lg"
-                 loading="eager">
-
-            <!-- Navigation Buttons -->
-            <button onclick="prevImage()" 
-                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-l-lg hover:bg-gray-700">
-                ◀
-            </button>
-            <button onclick="nextImage()" 
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-r-lg hover:bg-gray-700">
-                ▶
-            </button>
+                 class="w-full h-94 sm:h-80 md:h-[450px] object-cover rounded-lg shadow-lg cursor-pointer"
+                 onclick="openSlider()">
         </div>
-
-        <script>
-            let images = [
-                {% for img in images %}
-                    "{{ img.image.url|add:'?f_auto,q_auto,w_800' }}",
-                {% endfor %}
-            ];
-            let index = 0;
-
-            function nextImage() {
-                index = (index + 1) % images.length;
-                document.getElementById("house-img").src = images[index];
-            }
-
-            function prevImage() {
-                index = (index - 1 + images.length) % images.length;
-                document.getElementById("house-img").src = images[index];
-            }
-        </script>
     </div>
     {% else %}
     <p class="text-gray-500 italic mt-4 text-center">No images available.</p>
     {% endif %}
 
+    <!-- Full-Screen Image Slider (Hidden by Default) -->
+    <div id="image-slider" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center hidden">
+        <button onclick="closeSlider()" class="absolute top-5 right-5 text-white text-2xl font-bold">✖</button>
+        
+        <div class="relative w-full max-w-md sm:max-w-lg md:max-w-3xl">
+            <img id="slider-img" 
+                 src="{{ images.0.image.url|add:'?f_auto,q_auto,w_800' }}" 
+                 class="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-lg">
+            
+            <!-- Navigation Buttons -->
+            <button onclick="prevImage()" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-full hover:bg-gray-700">
+                ◀
+            </button>
+            <button onclick="nextImage()" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-full hover:bg-gray-700">
+                ▶
+            </button>
+        </div>
+    </div>
+
     <!-- Video Section -->
     {% if house.video %}
     <div class="mt-6 flex flex-col items-center w-full">
         <h4 class="text-xl md:text-2xl font-semibold text-gray-900">House Video</h4>
-        <iframe width="100%" height="250" class="w-full sm:w-[400px] md:w-[600px] md:h-[350px] rounded-lg shadow-lg mt-2" 
-                src="{{ house.video.url }}" frameborder="0" allowfullscreen>
-        </iframe>
+        <video controls width="100%" class="w-full sm:w-[400px] md:w-[600px] md:h-[350px] rounded-lg shadow-lg mt-2">
+            <source src="{{ house.video.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
     {% endif %}
 
@@ -67,5 +62,33 @@
         View Details
     </a>
 </div>
+
+<script>
+    let images = [
+        {% for img in images %}
+            "{{ img.image.url|add:'?f_auto,q_auto,w_800' }}",
+        {% endfor %}
+    ];
+    let index = 0;
+
+    function openSlider() {
+        document.getElementById("image-slider").classList.remove("hidden");
+        document.getElementById("slider-img").src = images[index];
+    }
+
+    function closeSlider() {
+        document.getElementById("image-slider").classList.add("hidden");
+    }
+
+    function nextImage() {
+        index = (index + 1) % images.length;
+        document.getElementById("slider-img").src = images[index];
+    }
+
+    function prevImage() {
+        index = (index - 1 + images.length) % images.length;
+        document.getElementById("slider-img").src = images[index];
+    }
+</script>
 
 {% endblock %}
