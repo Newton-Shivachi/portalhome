@@ -29,12 +29,15 @@
     <!-- Full-Screen Image Slider (Hidden by Default) -->
     <div id="image-slider" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center hidden">
         <button onclick="closeSlider()" class="absolute top-5 right-5 text-white text-2xl font-bold">✖</button>
-        
-        <div class="relative w-full max-w-md sm:max-w-lg md:max-w-3xl">
-            <img id="slider-img" 
-                 src="{{ images.0.image.url|add:'?f_auto,q_auto,w_800' }}" 
-                 class="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-lg">
-            
+
+        <div class="relative w-full max-w-md sm:max-w-lg md:max-w-3xl overflow-hidden">
+            <div id="slider-container" class="flex transition-transform duration-300 ease-in-out">
+                {% for img in images %}
+                <img src="{{ img.image.url|add:'?f_auto,q_auto,w_800' }}" 
+                     class="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-lg flex-shrink-0">
+                {% endfor %}
+            </div>
+
             <!-- Navigation Buttons -->
             <button onclick="prevImage()" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-full hover:bg-gray-700">
                 ◀
@@ -64,16 +67,12 @@
 </div>
 
 <script>
-    let images = [
-        {% for img in images %}
-            "{{ img.image.url|add:'?f_auto,q_auto,w_800' }}",
-        {% endfor %}
-    ];
     let index = 0;
+    const sliderContainer = document.getElementById("slider-container");
+    const totalImages = sliderContainer.children.length;
 
     function openSlider() {
         document.getElementById("image-slider").classList.remove("hidden");
-        document.getElementById("slider-img").src = images[index];
     }
 
     function closeSlider() {
@@ -81,13 +80,26 @@
     }
 
     function nextImage() {
-        index = (index + 1) % images.length;
-        document.getElementById("slider-img").src = images[index];
+        if (index < totalImages - 1) {
+            index++;
+        } else {
+            index = 0; // Loop back to the first image
+        }
+        updateSlider();
     }
 
     function prevImage() {
-        index = (index - 1 + images.length) % images.length;
-        document.getElementById("slider-img").src = images[index];
+        if (index > 0) {
+            index--;
+        } else {
+            index = totalImages - 1; // Loop back to the last image
+        }
+        updateSlider();
+    }
+
+    function updateSlider() {
+        const offset = -index * 100;
+        sliderContainer.style.transform = `translateX(${offset}%)`;
     }
 </script>
 
