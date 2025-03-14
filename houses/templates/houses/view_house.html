@@ -7,58 +7,51 @@
     <p class="text-gray-700 mt-2 text-center max-w-lg">{{ house.description }}</p>
     <p class="text-gray-700 mt-2 text-center max-w-lg">{{ house.rent }}</p>
 
+    <!-- Click to View More -->
+    <p class="text-blue-500 font-semibold mt-4 cursor-pointer" onclick="openSlider()">
+        Click to see more images
+    </p>
+
+    <!-- Thumbnail Image (Opens Full-Screen Slider) -->
     {% if images %}
-    <!-- Image Carousel -->
-    <div id="image-carousel" class="image-carousel mt-6 flex flex-col items-center w-full relative">
-        <button onclick="closeCarousel()" 
-                class="absolute top-2 right-2 bg-gray-800 text-white text-xl px-3 py-1 rounded-lg hover:bg-gray-700">
-            ✖
-        </button>
-
+    <div class="mt-6 flex flex-col items-center w-full">
         <div class="relative w-full max-w-xs sm:max-w-md md:max-w-2xl">
-            <img id="house-img" 
-                 src="{{ images.0.image.url|add:'?f_auto,q_auto,w_800' }}" 
+            <img src="{{ images.0.image.url|add:'?f_auto,q_auto,w_800' }}" 
                  alt="House Image" 
-                 class="w-full h-94 sm:h-80 md:h-[450px] object-cover rounded-lg shadow-lg"
-                 loading="eager">
-
-            <!-- Navigation Buttons -->
-            <button onclick="prevImage()" 
-                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-l-lg hover:bg-gray-700">
-                ◀
-            </button>
-            <button onclick="nextImage()" 
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-r-lg hover:bg-gray-700">
-                ▶
-            </button>
+                 class="w-full h-94 sm:h-80 md:h-[450px] object-cover rounded-lg shadow-lg cursor-pointer"
+                 onclick="openSlider()">
         </div>
-
-        <script>
-            let images = [
-                {% for img in images %}
-                    "{{ img.image.url|add:'?f_auto,q_auto,w_800' }}",
-                {% endfor %}
-            ];
-            let index = 0;
-
-            function nextImage() {
-                index = (index + 1) % images.length;
-                document.getElementById("house-img").src = images[index];
-            }
-
-            function prevImage() {
-                index = (index - 1 + images.length) % images.length;
-                document.getElementById("house-img").src = images[index];
-            }
-
-            function closeCarousel() {
-                document.getElementById("image-carousel").style.display = "none";
-            }
-        </script>
     </div>
     {% else %}
     <p class="text-gray-500 italic mt-4 text-center">No images available.</p>
     {% endif %}
+
+<!-- Full-Screen Image Slider (Hidden by Default) -->
+<div id="image-slider" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center hidden">
+    <!-- Close Button (X) -->
+    <button onclick="closeSlider()" class="absolute top-5 right-5 text-white text-3xl font-bold z-50">
+        ✖
+    </button>
+
+    <div class="relative w-full max-w-md sm:max-w-lg md:max-w-3xl overflow-hidden">
+        <div id="slider-container" class="flex transition-transform duration-300 ease-in-out">
+            {% for img in images %}
+            <img src="{{ img.image.url|add:'?f_auto,q_auto,w_800' }}" 
+                 class="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-lg flex-shrink-0">
+            {% endfor %}
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button onclick="prevImage()" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-full hover:bg-gray-700">
+            ◀
+        </button>
+        <button onclick="nextImage()" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-4 py-3 rounded-full hover:bg-gray-700">
+            ▶
+        </button>
+    </div>
+</div>
+
+    </div>
 
     <!-- Video Section -->
     {% if house.video %}
@@ -77,5 +70,42 @@
         View Details
     </a>
 </div>
+
+<script>
+    let index = 0;
+    const sliderContainer = document.getElementById("slider-container");
+    const totalImages = sliderContainer.children.length;
+
+    function openSlider() {
+        document.getElementById("image-slider").classList.remove("hidden");
+    }
+
+    function closeSlider() {
+        document.getElementById("image-slider").classList.add("hidden");
+    }
+
+    function nextImage() {
+        if (index < totalImages - 1) {
+            index++;
+        } else {
+            index = 0; // Loop back to the first image
+        }
+        updateSlider();
+    }
+
+    function prevImage() {
+        if (index > 0) {
+            index--;
+        } else {
+            index = totalImages - 1; // Loop back to the last image
+        }
+        updateSlider();
+    }
+
+    function updateSlider() {
+        const offset = -index * 100;
+        sliderContainer.style.transform = `translateX(${offset}%)`;
+    }
+</script>
 
 {% endblock %}
