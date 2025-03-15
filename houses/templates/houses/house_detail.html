@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{{ house.name }}</h2>
-<p>{{ house.description }}</p>
-<p>{{ house.contact }}</p>
+<h2 class="text-2xl font-bold text-gray-800 mb-2">{{ house.name }}</h2>
+<p class="text-gray-600 mb-4">{{ house.description }}</p>
+<p class="text-blue-500 font-semibold">📞 {{ house.contact }}</p>
 
 {% if user_has_paid %}
     <!-- First Map: Shows only the current house -->
-    <h3>House Location:</h3>
+    <h3 class="text-2xl font-bold text-gray-800 mb-2">House Location:</h3>
     <div id="house-map" style="height: 300px;"></div>
 
     <!-- Second Map: Shows all houses in this location -->
-    <h3>All Houses in {{ house.location }}:</h3>
+    <h3 class="text-2xl font-bold text-gray-800 mb-2">All Houses in {{ house.location }}:</h3>
     <div id="all-houses-map" style="height: 400px;"></div>
 {% else %}
     <p><strong>You need to pay to view the map.</strong></p>
