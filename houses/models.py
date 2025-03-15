@@ -43,7 +43,7 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         """Set expiration date only if the payment is successful."""
         if self.status == "success" and not self.expires_on:
-            self.expires_on = now() + timedelta(days=14)  # ✅ Give 14 days access
+            self.expires_on = now() + timedelta(days=1)  # ✅ Give 1 days access
         super().save(*args, **kwargs)
 
     def is_expired(self):
