@@ -65,10 +65,13 @@
     {% endif %}
 
     <!-- View Details Button -->
-    <a href="{% url 'house_detail' house.id %}" 
-       class="mt-6 inline-block bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 text-lg shadow-md">
-        View Details
-    </a>
+            <div class="flex space-x-2 mt-4">
+                <p>To access the location and contact details of this house and houses in this estate Pay fare of KSH 150</p>
+                <a href="{% url 'house_detail' house.id %}" class="bg-blue-500 text-sm text-white px-1 py-1 rounded-md hover:bg-blue-600">
+                   pay 150, access 📍 and 📞
+                </a>
+                
+                
 </div>
 
 <script>
