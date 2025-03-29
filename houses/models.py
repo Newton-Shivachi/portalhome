@@ -20,20 +20,19 @@ class CustomUser(AbstractUser):
     # Resolve related name conflicts
     groups = models.ManyToManyField(
         "auth.Group",
-        related_name="customuser_groups",  # Change related_name
+        related_name="customuser_groups_set",  # ✅ Unique related_name
         blank=True,
         help_text="The groups this user belongs to."
     )
     user_permissions = models.ManyToManyField(
         "auth.Permission",
-        related_name="customuser_permissions",  # Change related_name
+        related_name="customuser_permissions_set",  # ✅ Unique related_name
         blank=True,
         help_text="Specific permissions for this user."
     )
 
-
 class House(models.Model):
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Use custom user model
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # ✅ Correct user reference
     posted_on = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -44,6 +43,7 @@ class House(models.Model):
     is_taken = models.BooleanField(default=False)
     video = CloudinaryField('house_video', resource_type='video', blank=True, null=True)
     rent = models.CharField(max_length=255)
+
     def __str__(self):
         return f"{self.name} - {self.location} (by {self.owner.username})"
 
