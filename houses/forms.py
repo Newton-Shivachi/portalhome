@@ -7,7 +7,7 @@ class HouseForm(forms.ModelForm):
         fields = ['name', 'description', 'location', 'latitude', 'longitude', 'contact', 'rent', 'video']
 
 class HouseImageForm(forms.ModelForm):
-    image = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False)
+    image = forms.FileField(widget=forms.FileInput(attrs={'multiple': True}), required=False)
 
     class Meta:
         model = HouseImage
