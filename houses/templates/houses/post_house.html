@@ -2,9 +2,13 @@
 
 {% block content %}
 <h2>Post a New House</h2>
-<form method="POST" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
+
+    <label for="images">Upload Images:</label>
+    <input type="file" name="images" multiple>
+
     <button type="submit">Post House</button>
 </form>
 {% endblock %}
