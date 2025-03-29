@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import house_list, house_detail, add_house, add_house_images,initiate_payment, verify_payment, view_location,view_house,logout_view, signup
+from .views import house_list, house_detail,post_house, my_houses, edit_house, add_house, add_house_images,initiate_payment, verify_payment, view_location,view_house,logout_view, signup
 from django.contrib.auth.views import LoginView
 urlpatterns = [
     path('', house_list, name='house_list'),
@@ -9,4 +9,7 @@ urlpatterns = [
     path("payment/<str:location>/", initiate_payment, name="initiate_payment"),path("signup/", signup, name="signup"),
     path("payment/verify/<str:reference>/", verify_payment, name="verify_payment"),
     path("map/<str:location>/", view_location, name="view_location"),
+    path("post-house/", post_house, name="post_house"),
+    path("my-houses/", my_houses, name="my_houses"),
+    path("edit-house/<int:house_id>/", edit_house, name="edit_house"),
 ]
