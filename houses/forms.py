@@ -13,7 +13,6 @@ class HouseForm(forms.ModelForm):
         if commit:
             house.save()
         return house
-
 class HouseImageForm(forms.ModelForm):
     class Meta:
         model = HouseImage
