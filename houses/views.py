@@ -238,3 +238,56 @@ def view_location(request, location):
     houses = House.objects.filter(location=location)
     
     return render(request, "houses/location_houses.html", {"houses": houses, "location": location})
+
+from django.contrib import messages
+
+from .forms import HouseForm
+
+@login_required
+def post_house(request):
+    """ Allows only authorized users to post houses """
+    if not request.user.can_post:
+        messages.error(request, "You are not allowed to post houses.")
+        return redirect("house_list")
+
+    if request.method == "POST":
+        form = HouseForm(request.POST, request.FILES)
+        if form.is_valid():
+            house = form.save(commit=False)
+            house.owner = request.user  # Assign logged-in user as the owner
+            house.save()
+            return redirect("my_houses")
+    else:
+        form = HouseForm()
+
+    return render(request, "houses/post_house.html", {"form": form})
+
+@login_required
+def my_houses(request):
+    """ Shows houses posted by the logged-in user (only if they can post) """
+    if not request.user.can_post:
+        messages.error(request, "You are not allowed to post houses.")
+        return redirect("house_list")
+
+    houses = House.objects.filter(owner=request.user)
+    return render(request, "houses/my_houses.html", {"houses": houses})
+
+@login_required
+def edit_house(request, house_id):
+    """ Allows users to update their house details (only if they can post) """
+    house = get_object_or_404(House, id=house_id, owner=request.user)
+
+    if not request.user.can_post:
+        messages.error(request, "You are not allowed to edit houses.")
+        return redirect("house_list")
+
+    if request.method == "POST":
+        form = HouseForm(request.POST, request.FILES, instance=house)
+        if form.is_valid():
+            form.save()
+            return redirect("my_houses")
+    else:
+        form = HouseForm(instance=house)
+
+    return render(request, "houses/edit_house.html", {"form": form, "house": house})
+
