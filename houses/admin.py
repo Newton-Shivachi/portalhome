@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import House, HouseImage, Payment
+from .models import House, HouseImage, Payment, CustomUser
+from django.contrib.auth.admin import UserAdmin
+
+class CustomUserAdmin(UserAdmin):
+    list_display = ("username", "email", "can_post", "is_staff", "is_active")
+    list_editable = ("can_post",)  # Allow admins to toggle "can_post" in admin panel
+
+admin.site.register(CustomUser, CustomUserAdmin)
 
 admin.site.register(Payment)
 class HouseImageInline(admin.TabularInline):  # Allows adding images inline
