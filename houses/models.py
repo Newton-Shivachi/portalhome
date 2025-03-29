@@ -5,10 +5,15 @@ import requests
 from django.conf import settings
 from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+
 class CustomUser(AbstractUser):
     can_post = models.BooleanField(default=False)  # Only allowed users can post
+    
 
 class House(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Use custom user model
+    posted_on = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=255)
@@ -19,7 +24,7 @@ class House(models.Model):
     video = CloudinaryField('house_video', resource_type='video', blank=True, null=True)
     rent = models.CharField(max_length=255)
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.location} (by {self.owner.username})"
 
 class HouseImage(models.Model):
     house = models.ForeignKey(House, on_delete=models.CASCADE, related_name="house_images")  
