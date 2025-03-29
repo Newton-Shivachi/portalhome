@@ -7,9 +7,30 @@ from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
 class CustomUser(AbstractUser):
-    can_post = models.BooleanField(default=False)  # Only allowed users can post
-    
+    can_post = models.BooleanField(default=False)  # Only certain users can post houses
+
+    class Meta:
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+
+    # Resolve related name conflicts
+    groups = models.ManyToManyField(
+        "auth.Group",
+        related_name="customuser_groups",  # Change related_name
+        blank=True,
+        help_text="The groups this user belongs to."
+    )
+    user_permissions = models.ManyToManyField(
+        "auth.Permission",
+        related_name="customuser_permissions",  # Change related_name
+        blank=True,
+        help_text="Specific permissions for this user."
+    )
+
 
 class House(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Use custom user model
