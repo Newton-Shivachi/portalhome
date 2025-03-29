@@ -250,13 +250,14 @@ def post_house(request):
 
     if request.method == "POST":
         form = HouseForm(request.POST, request.FILES)
-        images = request.FILES.getlist('images')  # Get multiple images
+        image_form = HouseImageForm(request.POST, request.FILES)
 
-        if form.is_valid():
+        if form.is_valid() and image_form.is_valid():
             house = form.save(commit=False)
             house.owner = request.user
             house.save()
 
+            images = request.FILES.getlist('image')  # Get multiple images
             for image in images:
                 HouseImage.objects.create(house=house, image=image)
 
@@ -264,8 +265,9 @@ def post_house(request):
 
     else:
         form = HouseForm()
+        image_form = HouseImageForm()
 
-    return render(request, "houses/post_house.html", {"form": form})
+    return render(request, "houses/post_house.html", {"form": form, "image_form": image_form})
 
 @login_required
 def my_houses(request):
