@@ -48,8 +48,8 @@ class House(models.Model):
         return f"{self.name} - {self.location} (by {self.owner.username})"
 
 class HouseImage(models.Model):
-    house = models.ForeignKey(House, on_delete=models.CASCADE, related_name="house_images")  
-    image = CloudinaryField('image',default='None')
+    house = models.ForeignKey(House, on_delete=models.CASCADE, related_name="images")  
+    image = CloudinaryField('house_image',blank=False,null=False,default='None')
 
     def __str__(self):
         return f"Image for {self.house.name}"
