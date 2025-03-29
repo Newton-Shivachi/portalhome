@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-DATABASES['default'] = dj_database_url.parse("postgres://neondb_owner:npg_Pqjol0ti4ZJh@ep-aged-scene-a5k2zuse-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require")
+DATABASES['default'] = dj_database_url.parse("postgres://neondb_owner:npg_KiDd4FeJo3pY@ep-withered-sun-a40kp4d2-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require")
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Required for collectstatic
