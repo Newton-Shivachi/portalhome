@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>My Houses</h2>
+
+{% for house in houses %}
+    <div>
+        <h3>{{ house.name }}</h3>
+        <p>{{ house.description }}</p>
+        <p>Location: {{ house.location }}</p>
+        {% if house.images %}
+            <img src="{{ house.images.url }}" alt="{{ house.name }}" width="200">
+        {% endif %}
+        <br>
+        <a href="{% url 'edit_house' house.id %}">Edit</a>
+    </div>
+    <hr>
+{% empty %}
+    <p>You have not posted any houses.</p>
+{% endfor %}
+{% endblock %}
