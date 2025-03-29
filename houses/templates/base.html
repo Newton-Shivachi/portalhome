@@ -21,14 +21,18 @@
         <div class="max-w-screen-xl mx-auto flex justify-between items-center">
             <a href="{% url 'house_list' %}" class="text-xl font-bold">🏡 House Listings</a>
 
-            <ul class="flex space-x-4">
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}" class="hover:underline">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'signup' %}" class="hover:underline">Sign Up</a></li>
-                    <li><a href="{% url 'login' %}" class="hover:underline">Login</a></li>
+            <ul>
+            {% if user.is_authenticated %}
+                {% if user.can_post %}
+                    <li><a href="{% url 'post_house' %}">Post House</a></li>
+                    <li><a href="{% url 'my_houses' %}">My Houses</a></li>
                 {% endif %}
-            </ul>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+        </ul>
         </div>
     </nav>
 
