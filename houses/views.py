@@ -245,18 +245,23 @@ from .forms import HouseForm
 
 @login_required
 def post_house(request):
-    """ Allows only authorized users to post houses """
     if not request.user.can_post:
-        messages.error(request, "You are not allowed to post houses.")
-        return redirect("house_list")
+        return redirect("home")  # Redirect unauthorized users
 
     if request.method == "POST":
         form = HouseForm(request.POST, request.FILES)
+        images = request.FILES.getlist('images')  # Get multiple images
+
         if form.is_valid():
             house = form.save(commit=False)
-            house.owner = request.user  # Assign logged-in user as the owner
+            house.owner = request.user
             house.save()
-            return redirect("my_houses")
+
+            for image in images:
+                HouseImage.objects.create(house=house, image=image)
+
+            return redirect("house_list")
+
     else:
         form = HouseForm()
 
