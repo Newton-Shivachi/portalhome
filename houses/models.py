@@ -4,6 +4,10 @@ from django.utils.timezone import now, timedelta
 import requests
 from django.conf import settings
 from cloudinary.models import CloudinaryField
+from django.contrib.auth.models import AbstractUser
+class CustomUser(AbstractUser):
+    can_post = models.BooleanField(default=False)  # Only allowed users can post
+
 class House(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
