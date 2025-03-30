@@ -291,10 +291,12 @@ def edit_house(request, house_id):
     if request.method == "POST":
         form = HouseForm(request.POST, request.FILES, instance=house)
         if form.is_valid():
-            form.save()
+            house = form.save(commit=False)  # Don't save yet
+            house.is_taken = request.POST.get("is_taken") == "on"  # Handle checkbox manually
+            house.save()  # Now save the house
+            messages.success(request, "House updated successfully!")
             return redirect("my_houses")
     else:
         form = HouseForm(instance=house)
 
     return render(request, "houses/edit_house.html", {"form": form, "house": house})
-
