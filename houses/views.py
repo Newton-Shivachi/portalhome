@@ -281,7 +281,6 @@ def my_houses(request):
 
 @login_required
 def edit_house(request, house_id):
-    """ Allows users to update their house details (only if they can post) """
     house = get_object_or_404(House, id=house_id, owner=request.user)
 
     if not request.user.can_post:
@@ -291,13 +290,12 @@ def edit_house(request, house_id):
     if request.method == "POST":
         form = HouseForm(request.POST, request.FILES, instance=house)
         if form.is_valid():
-            house = form.save(commit=False)  # Don't save yet
-            house.is_taken = "is_taken" in request.POST  # Set True if checkbox is checked, False if missing
-            house.save()  # Now save the house
-            messages.success(request, "House updated successfully!")
+            house = form.save(commit=False)  
+            house.is_taken = 'is_taken' in request.POST  # Ensure unchecked updates to False
+            house.save()
             return redirect("my_houses")
-
     else:
         form = HouseForm(instance=house)
 
     return render(request, "houses/edit_house.html", {"form": form, "house": house})
+
