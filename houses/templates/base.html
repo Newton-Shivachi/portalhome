@@ -19,47 +19,81 @@
     <!-- Navigation Bar (Fixed at the Top) -->
     <nav class="bg-blue-500 p-3 text-white shadow-md fixed w-full top-0 z-50">
         <div class="max-w-screen-xl mx-auto flex justify-between items-center">
-            <a href="{% url 'house_list' %}" class="text-xl font-bold">🏡 House Listings</a>
+            <!-- Logo -->
+            <a href="{% url 'house_list' %}" class="text-xl font-bold flex items-center">🏡 House Listings</a>
 
-            <ul>
+            <!-- Mobile Menu Button -->
+            <button id="menu-btn" class="lg:hidden text-white text-2xl focus:outline-none">
+                ☰
+            </button>
+
+            <!-- Navigation Links -->
+            <ul id="menu" class="hidden lg:flex space-x-6">
+                {% if user.is_authenticated %}
+                    {% if user.can_post %}
+                        <li><a href="{% url 'post_house' %}" class="hover:text-gray-300">Post House</a></li>
+                        <li><a href="{% url 'my_houses' %}" class="hover:text-gray-300">My Houses</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'signup' %}" class="hover:text-gray-300">Sign Up</a></li>
+                    <li><a href="{% url 'login' %}" class="hover:text-gray-300">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <ul id="mobile-menu" class="hidden lg:hidden bg-blue-600 text-white p-4 text-center space-y-4">
             {% if user.is_authenticated %}
                 {% if user.can_post %}
-                    <li><a href="{% url 'post_house' %}">Post House</a></li>
-                    <li><a href="{% url 'my_houses' %}">My Houses</a></li>
+                    <li><a href="{% url 'post_house' %}" class="hover:text-gray-300">Post House</a></li>
+                    <li><a href="{% url 'my_houses' %}" class="hover:text-gray-300">My Houses</a></li>
                 {% endif %}
-                <li><a href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a></li>
             {% else %}
-                <li><a href="{% url 'signup' %}">Sign Up</a></li>
-                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'signup' %}" class="hover:text-gray-300">Sign Up</a></li>
+                <li><a href="{% url 'login' %}" class="hover:text-gray-300">Login</a></li>
             {% endif %}
         </ul>
-        </div>
     </nav>
 
-    <!-- Main Content (No Extra Margins) -->
-    <div class="w-full max-w-screen-xl mx-auto px-4 py-20">
+    <!-- Main Content -->
+    <div class="w-full max-w-screen-xl mx-auto px-4 py-24">
         {% block content %}
         {% endblock %}
     </div>
 
     <!-- Footer -->
-            <footer class="bg-gray-900 text-white py-6 px-4">
-            <div class="container mx-auto flex flex-wrap justify-between">
-                <div class="w-full sm:w-1/2 mb-4 sm:mb-0">
-                    <h1 class="text-lg font-semibold">About</h1>
-                    <p class="text-sm">At Home Portal, we make finding your dream home in Nairobi simple and affordable. Skip the hassle of high agent fees- view all houses in yor choosen estate by just paying a small fare from town. No hidden costs, no stress
-                    <br> Let's help you find you next home. Reimburse our fare, and you're good to go. Your dreamhome is just a click away!</p>
-                </div>
-                <div class="w-full sm:w-1/2">
-                    <h1 class="text-lg font-semibold">Contact</h1>
-                    <ul class="text-sm">
-                        <li>Email: <strong>newtonatika@gmail.com</strong></li>
-                        <li>Phone: <strong>0746094925 </strong></li>
-                        <li>WhatsApp: <strong>0718463944</strong></li>
-                    </ul>
-                </div>
+    <footer class="bg-gray-900 text-white py-6 px-4">
+        <div class="container mx-auto flex flex-wrap justify-between">
+            <div class="w-full sm:w-1/2 mb-4 sm:mb-0">
+                <h1 class="text-lg font-semibold">About</h1>
+                <p class="text-sm">
+                    At Home Portal, we make finding your dream home in Nairobi simple and affordable. Skip the hassle of high agent fees—view all houses in your chosen estate by just paying a small fare from town.
+                    <br> Let's help you find your next home. Reimburse our fare, and you're good to go. Your dream home is just a click away!
+                </p>
             </div>
-        </footer>
+            <div class="w-full sm:w-1/2">
+                <h1 class="text-lg font-semibold">Contact</h1>
+                <ul class="text-sm">
+                    <li>Email: <strong>newtonatika@gmail.com</strong></li>
+                    <li>Phone: <strong>0746094925</strong></li>
+                    <li>WhatsApp: <strong>0718463944</strong></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+        const menuBtn = document.getElementById("menu-btn");
+        const menu = document.getElementById("menu");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        menuBtn.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+    </script>
 
 </body>
 </html>
