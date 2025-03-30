@@ -1,21 +1,111 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>My Houses</h2>
+    <h2 class="title">My Houses</h2>
 
-{% for house in houses %}
-    <div>
-        <h3>{{ house.name }}</h3>
-        <p>{{ house.description }}</p>
-        <p>Location: {{ house.location }}</p>
-        {% if house.images %}
-            <img src="{{ house.images.url }}" alt="{{ house.name }}" width="200">
-        {% endif %}
-        <br>
-        <a href="{% url 'edit_house' house.id %}">Edit</a>
+    <div class="houses-container">
+        {% for house in houses %}
+            <div class="house-card">
+                <h3>{{ house.name }}</h3>
+                <p class="desc">{{ house.description }}</p>
+                <p class="location"><strong>Location:</strong> {{ house.location }}</p>
+
+                {% if house.images %}
+                    <img src="{{ house.images.url }}" alt="{{ house.name }}" class="house-image">
+                {% endif %}
+
+                <a href="{% url 'edit_house' house.id %}" class="edit-btn">Edit</a>
+            </div>
+        {% empty %}
+            <p class="no-houses">You have not posted any houses.</p>
+        {% endfor %}
     </div>
-    <hr>
-{% empty %}
-    <p>You have not posted any houses.</p>
-{% endfor %}
+
 {% endblock %}
+
+<style>
+    /* Page Title */
+    .title {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Container for all houses */
+    .houses-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Individual House Card */
+    .house-card {
+        width: 300px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    /* House Image */
+    .house-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    /* House Description */
+    .desc {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    /* Location */
+    .location {
+        font-size: 14px;
+        color: #333;
+    }
+
+    /* Edit Button */
+    .edit-btn {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 12px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .edit-btn:hover {
+        background: #0056b3;
+    }
+
+    /* No Houses Message */
+    .no-houses {
+        text-align: center;
+        font-size: 18px;
+        color: #777;
+    }
+
+    /* Responsive Design */
+    @media screen and (max-width: 600px) {
+        .houses-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .house-card {
+            width: 90%;
+        }
+    }
+</style>
+
