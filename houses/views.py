@@ -267,9 +267,6 @@ def post_house(request):
         form = HouseForm()
     
     return render(request, "houses/post_house.html", {"form": form})
-
-
-
 @login_required
 def my_houses(request):
     """ Shows houses posted by the logged-in user (only if they can post) """
