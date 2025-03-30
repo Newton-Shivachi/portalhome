@@ -21,7 +21,7 @@ def house_list(request):
     query = request.GET.get('q', '').strip()
     location_filter = request.GET.get('location', '').strip()
 
-    houses = House.objects.all()
+    houses = House.objects.filter(is_taken=False)
 
     # Search Filter
     if query:
