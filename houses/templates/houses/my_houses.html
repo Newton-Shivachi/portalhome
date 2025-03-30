@@ -23,66 +23,71 @@
 {% endblock %}
 
 <style>
-    /* Container Styling */
+    /* Page Container */
     .container {
-        max-width: 1100px;
-        margin: auto;
-        padding: 30px 20px;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 40px 20px;
         text-align: center;
     }
 
     /* Page Title */
     .title {
-        font-size: 32px;
-        color: #222;
+        font-size: 34px;
         font-weight: bold;
-        margin-bottom: 20px;
+        color: #333;
+        margin-bottom: 30px;
         text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
-    /* Grid Layout for Houses */
+    /* Houses Grid */
     .houses-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        justify-items: center;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        justify-content: center;
     }
 
-    /* Individual House Card */
+    /* House Card */
     .house-card {
         background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        border: 3px solid #bbb;
+        border-radius: 12px;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 350px;
+        max-width: 380px;
         text-align: left;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease-in-out;
     }
 
+    /* Hover Effect */
     .house-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+        border-color: #888;
     }
 
     /* House Name */
     .house-name {
-        font-size: 22px;
+        font-size: 24px;
         font-weight: bold;
-        color: #333;
-        margin-bottom: 10px;
+        color: #222;
+        margin-bottom: 12px;
     }
 
     /* House Description */
     .house-description {
-        font-size: 14px;
+        font-size: 16px;
         color: #555;
-        margin-bottom: 10px;
+        line-height: 1.5;
+        margin-bottom: 12px;
     }
 
     /* House Location */
     .house-location {
-        font-size: 14px;
+        font-size: 16px;
         color: #444;
         font-weight: 500;
     }
@@ -91,12 +96,12 @@
     .edit-btn {
         display: inline-block;
         margin-top: 15px;
-        padding: 10px 15px;
+        padding: 12px 18px;
         background: #007bff;
         color: white;
         text-decoration: none;
-        border-radius: 5px;
-        font-size: 14px;
+        border-radius: 6px;
+        font-size: 16px;
         font-weight: bold;
         transition: 0.3s ease;
     }
@@ -107,17 +112,20 @@
 
     /* No Houses Message */
     .no-houses {
-        font-size: 18px;
+        font-size: 20px;
         color: #777;
         font-style: italic;
+        margin-top: 30px;
     }
 
     /* Responsive Design */
     @media screen and (max-width: 768px) {
         .houses-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .container {
+            padding: 20px;
         }
     }
 </style>
-
-
