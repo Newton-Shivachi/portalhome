@@ -290,12 +290,13 @@ def edit_house(request, house_id):
     if request.method == "POST":
         form = HouseForm(request.POST, request.FILES, instance=house)
         if form.is_valid():
-            house = form.save(commit=False)  
-            house.is_taken = 'is_taken' in request.POST  # Ensure unchecked updates to False
+            house = form.save(commit=False)
+            house.is_taken = 'is_taken' in request.POST  # Ensure checkbox updates correctly
             house.save()
+            messages.success(request, "House updated successfully!")
             return redirect("my_houses")
     else:
         form = HouseForm(instance=house)
 
-    return render(request, "houses/edit_house.html", {"form": form, "house": house})
+    return render(request, "houses/post_house.html", {"form": form, "house": house})
 
