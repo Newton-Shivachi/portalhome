@@ -1,20 +1,39 @@
-{% extends "base.html" %}
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 
-{% block content %}
-<h2>Post a New House</h2>
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     
     {{ form.as_p }}
-
     {% if user.can_post %}
         <label for="is_taken">Is Taken?</label>
         <input type="checkbox" name="is_taken" {% if house.is_taken %}checked{% endif %}>
     {% endif %}
-
     <label for="images">Upload Images:</label>
-    <input type="file" name="images" multiple accept="image/*">
+    <button id="upload-widget" type="button">Upload Images</button>
+    <div id="uploaded-images"></div>
+    <input type="hidden" name="image_urls" id="image-urls">
 
     <button type="submit">Post House</button>
 </form>
-{% endblock %}
+
+<script>
+    var myWidget = cloudinary.createUploadWidget({
+        cloudName: 'dvg4cttcl', 
+        uploadPreset: 'newtonatika@gmail.com'
+    }, (error, result) => {
+        if (!error && result && result.event === "success") {
+            let imgUrl = result.info.secure_url;
+            let imgInput = document.getElementById("image-urls");
+            imgInput.value += imgUrl + ",";
+
+            let imgPreview = document.createElement("img");
+            imgPreview.src = imgUrl;
+            imgPreview.width = 100;
+            document.getElementById("uploaded-images").appendChild(imgPreview);
+        }
+    });
+
+    document.getElementById("upload-widget").addEventListener("click", function(){
+        myWidget.open();
+    }, false);
+</script>
