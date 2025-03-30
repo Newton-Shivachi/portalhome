@@ -4,7 +4,13 @@
 <h2>Post a New House</h2>
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
+    
     {{ form.as_p }}
+
+    {% if user.can_post %}
+        <label for="is_taken">Is Taken?</label>
+        <input type="checkbox" name="is_taken" {% if house.is_taken %}checked{% endif %}>
+    {% endif %}
 
     <label for="images">Upload Images:</label>
     <input type="file" name="images" multiple accept="image/*">
