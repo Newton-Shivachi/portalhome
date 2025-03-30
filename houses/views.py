@@ -246,20 +246,22 @@ from .forms import HouseForm
 @login_required
 def post_house(request):
     if not request.user.can_post:
-        return redirect("home")  # Redirect unauthorized users
+        return redirect("home")
 
     if request.method == "POST":
-        form = HouseForm(request.POST, request.FILES)
+        form = HouseForm(request.POST)
         
         if form.is_valid():
             house = form.save(commit=False)
             house.owner = request.user
+            house.is_taken = request.POST.get("is_taken") == "on"  # Allow users to set "is_taken"
             house.save()
 
-            # Handle multiple images manually
-            images = request.FILES.getlist('images')  # Retrieve multiple images
-            for image in images:
-                HouseImage.objects.create(house=house, image=image)
+            # ✅ Handle Cloudinary image URLs
+            image_urls = request.POST.get("image_urls", "").split(",")
+            for url in image_urls:
+                if url.strip():
+                    HouseImage.objects.create(house=house, image=url)  # Save Cloudinary URL
 
             return redirect("house_list")
 
