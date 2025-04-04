@@ -217,9 +217,9 @@ def signup(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Automatically log in the user
+            login(request, user)
             messages.success(request, "Signup successful! Welcome.")
-            return redirect("house_list")  # Redirect to your main house list page
+            return redirect("house_list")
     else:
         form = CustomUserCreationForm()
 
