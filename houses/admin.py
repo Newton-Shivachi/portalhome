@@ -12,7 +12,7 @@ admin.site.register(Payment)
 class HouseImageInline(admin.TabularInline):  # Allows adding images inline
     model = HouseImage
     extra = 1  # Show one empty form for adding a new image
-
+    
 @admin.register(House)
 class HouseAdmin(admin.ModelAdmin):
     list_display = ('name', 'location', 'contact', 'is_taken')  # Columns in list view
