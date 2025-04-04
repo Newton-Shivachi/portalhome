@@ -1,14 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.timezone import now, timedelta
 import requests
 from django.conf import settings
 from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings
-
-from django.contrib.auth.models import AbstractUser
-from django.db import models
 
 class CustomUser(AbstractUser):
     can_post = models.BooleanField(default=False)  # Only certain users can post houses
