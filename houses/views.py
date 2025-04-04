@@ -210,19 +210,20 @@ def logout_view(request):
     return redirect("login")
 
 
+from .forms import CustomUserCreationForm  # ✅ use your custom form
+
 def signup(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # Automatically log in the user
             messages.success(request, "Signup successful! Welcome.")
-            return redirect("house_list")  # Redirect to home or another page
+            return redirect("house_list")  # Redirect to your main house list page
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, "houses/signup.html", {"form": form})
-
 def view_location(request, location):
     # Check if user has a valid payment for this location
     user_has_paid = Payment.objects.filter(
