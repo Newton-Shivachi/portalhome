@@ -1,23 +1,74 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-sm">
-        <p class='text-gray-900 text-bold'>include special characters e.g "@..."and numbers e.g "1,2 ..." in your password to sign in successfully</p><br>
-        <p class='text-gray-900 text-bold'>do not include your username in the password</p>
         <form method="post" class="space-y-4">
             {% csrf_token %}
-            
-            <input type="text" name="{{ form.username.name }}" placeholder="Username" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
-            
-            <input type="password" name="{{ form.password1.name }}" placeholder="Password" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
-            
-            <input type="password" name="{{ form.password2.name }}" placeholder="Confirm Password" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
-            
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+
+            {% for field in form %}
+                {% if field.name == 'username' %}
+                    <input type="text" name="{{ field.name }}" placeholder="Username" value="{{ field.value }}" required
+                           class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+                {% elif 'password' in field.name %}
+                    <input type="password" name="{{ field.name }}" placeholder="{{ field.label }}" required
+                           class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 password-field">
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="text-red-500 text-sm">{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+
+            <label class="text-sm text-gray-600">
+                <input type="checkbox" onclick="togglePassword()"> Show Passwords
+            </label>
+
+            <div id="password-help" class="text-sm text-gray-700">
+                <ul class="list-disc pl-5">
+                    <li id="num-check" class="text-red-500">Include at least one number</li>
+                    <li id="special-check" class="text-red-500">Include at least one special character (e.g. @#$%)</li>
+                    <li id="username-check" class="text-red-500">Should not include your username</li>
+                </ul>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition">
                 Sign Up
             </button>
         </form>
     </div>
 </div>
+
+<script>
+    const passwordFields = document.querySelectorAll('.password-field');
+    const usernameInput = document.querySelector('input[name="username"]');
+
+    passwordFields.forEach(field => {
+        field.addEventListener('input', checkPasswordStrength);
+    });
+
+    function togglePassword() {
+        passwordFields.forEach(field => {
+            field.type = field.type === "password" ? "text" : "password";
+        });
+    }
+
+    function checkPasswordStrength() {
+        const password = passwordFields[0].value;
+        const username = usernameInput.value.toLowerCase();
+
+        const numCheck = /\d/.test(password);
+        const specialCheck = /[^\w\s]/.test(password);
+        const usernameCheck = !password.toLowerCase().includes(username);
+
+        document.getElementById('num-check').classList.toggle('text-green-600', numCheck);
+        document.getElementById('num-check').classList.toggle('text-red-500', !numCheck);
+
+        document.getElementById('special-check').classList.toggle('text-green-600', specialCheck);
+        document.getElementById('special-check').classList.toggle('text-red-500', !specialCheck);
+
+        document.getElementById('username-check').classList.toggle('text-green-600', usernameCheck);
+        document.getElementById('username-check').classList.toggle('text-red-500', !usernameCheck);
+    }
+</script>
 {% endblock %}
+
