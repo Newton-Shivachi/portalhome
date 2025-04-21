@@ -70,7 +70,7 @@ def house_detail(request, house_id):
     ).exists()
 
     if not user_has_paid:
-        return redirect("initiate_payment", location=house.location)  # Redirect to pay
+        return redirect("initiate_payment", house_id=house.id)  # Redirect to pay
 
     return render(request, "houses/house_detail.html", {"house": house, "user_has_paid": user_has_paid,"houses_in_location": houses_in_location})
 
