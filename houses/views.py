@@ -174,13 +174,13 @@ def verify_payment(request, reference):
                 payment.expires_on = now() + timedelta(days=7)  # ✅ Set expiration
                 payment.save()
                 messages.success(request, f"Payment successful! You have access to {payment.location} until {payment.expires_on}.")
-                return redirect("house_detail", house_id=House.objects.filter(location=payment.location).first().id)
+                return redirect("house_list")  # ✅ Redirect to house listings
 
         messages.error(request, "Payment verification failed. Please try again.")
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Error verifying payment: {e}")
 
-    return redirect("house_detail")
+    return redirect("initiate_payment", location=payment.location)
 
 from django.contrib.auth import logout
 
