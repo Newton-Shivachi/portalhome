@@ -110,29 +110,33 @@ def add_house_images(request, house_id):
 
 ### ✅ INITIATE PAYSTACK PAYMENT
 @login_required
-def initiate_payment(request, house_id):
+def initiate_payment(request, location):
     user = request.user
-    house = get_object_or_404(House, id=house_id)
-    location = house.location
-    amount = 500
+    amount = 500  # KSH
     reference = str(uuid.uuid4())
 
-    # Already paid?
-    existing_payment = Payment.objects.filter(user=user, location=location, status="success").first()
-    if existing_payment and not existing_payment.is_expired():
+    # 🔍 Find a house with this location to track current house ID
+    house = House.objects.filter(location=location).first()
+    if house:
+        request.session["current_house_id"] = house.id  # Save for redirect after payment
+
+    # ✅ Check if user already paid and it hasn't expired
+    existing_payment = Payment.objects.filter(
+        user=user, location=location, status="success"
+    ).first()
+
+    if existing_payment and existing_payment.expires_on and not existing_payment.is_expired():
         messages.success(request, f"You already have access to {location} until {existing_payment.expires_on}.")
         return redirect("house_detail", house_id=house.id)
 
-    callback_url = request.build_absolute_uri(
-        reverse("verify_payment", kwargs={"reference": reference, "house_id": house.id})
-    )
-
+    # ✅ Prepare Paystack payment
+    callback_url = request.build_absolute_uri(f'/payment/verify/{reference}/')
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
     data = {
-        "email": user.username,  # Since no email, using username
-        "amount": int(amount * 100),
+        "email": user.username,  # You’re using username instead of email
+        "amount": int(amount * 100),  # Paystack requires amount in kobo
         "reference": reference,
-        "callback_url": callback_url,
+        "callback_url": callback_url
     }
 
     try:
@@ -140,21 +144,24 @@ def initiate_payment(request, house_id):
         response_data = response.json()
 
         if response_data.get("status"):
+            # Save pending payment
             Payment.objects.create(
                 user=user,
                 location=location,
                 amount=amount,
                 reference=reference,
-                status="pending"
+                status="pending",  # Not yet verified
+                expires_on=None
             )
+            # Redirect to Paystack authorization URL
             return redirect(response_data["data"]["authorization_url"])
+        else:
+            messages.error(request, "Failed to initiate payment. Try again later.")
 
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Payment could not be initialized. Error: {e}")
-    
+
     return redirect("house_list")
-
-
 ### ✅ VERIFY PAYSTACK PAYMENT
 
 PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
@@ -176,7 +183,8 @@ def verify_payment(request, reference, house_id):
                 payment.expires_on = now() + timedelta(days=7)
                 payment.save()
                 messages.success(request, f"Payment successful! You now have access to {payment.location}.")
-                return redirect("house_detail", house_id=house_id)  # ✅ Go back to the house page
+                return redirect("house_detail", house_id=request.session.get("current_house_id"))
+  # ✅ Go back to the house page
 
         messages.error(request, "Payment verification failed. Please try again.")
     except requests.exceptions.RequestException as e:
