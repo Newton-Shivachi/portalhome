@@ -111,7 +111,7 @@ def add_house_images(request, house_id):
 @login_required
 def initiate_payment(request, location):
     user = request.user
-    amount = 150  # Amount in currency
+    amount = 500  # Amount in currency
     reference = str(uuid.uuid4())
 
     # Check if user already has a valid payment
@@ -124,7 +124,7 @@ def initiate_payment(request, location):
     callback_url = request.build_absolute_uri(f'/payment/verify/{reference}/')
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
     data = {
-        "email": user.email,
+        "email": request.user.username,
         "amount": int(amount * 100),
         "reference": reference,
         "callback_url": callback_url
