@@ -148,7 +148,7 @@ def initiate_payment(request, location):
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Payment could not be initialized. Error: {e}")
     
-    return redirect("house_list")
+    return redirect("house_detail")
 
 
 
@@ -171,7 +171,7 @@ def verify_payment(request, reference):
 
             if payment:
                 payment.status = "success"  # ✅ Mark as successful
-                payment.expires_on = now() + timedelta(days=14)  # ✅ Set expiration
+                payment.expires_on = now() + timedelta(days=7)  # ✅ Set expiration
                 payment.save()
                 messages.success(request, f"Payment successful! You have access to {payment.location} until {payment.expires_on}.")
                 return redirect("house_detail", house_id=House.objects.filter(location=payment.location).first().id)
@@ -180,7 +180,7 @@ def verify_payment(request, reference):
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Error verifying payment: {e}")
 
-    return redirect("house_list")
+    return redirect("house_detail")
 
 from django.contrib.auth import logout
 
