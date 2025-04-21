@@ -148,7 +148,7 @@ def initiate_payment(request, location):
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Payment could not be initialized. Error: {e}")
     
-    return redirect("house_detail")
+    return redirect("house_list")
 
 
 
