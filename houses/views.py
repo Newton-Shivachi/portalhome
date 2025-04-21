@@ -157,26 +157,6 @@ def initiate_payment(request, location):
 PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
 
 @login_required
-def verify_payment(request):
-    reference = request.GET.get("reference")
-    headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
-    
-    response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
-    response_data = response.json()
-
-    if response_data.get("status") and response_data["data"]["status"] == "success":
-        # Fetch payment record
-        payment = get_object_or_404(Payment, reference=reference)
-
-        # Ensure the payment was actually successful before granting access
-        payment.expires_on = now() + timedelta(days=14)  # Extend access time
-        payment.save()
-
-        messages.success(request, f"Payment successful! You can now view houses in {payment.location}.")
-        return redirect("house_list")
-
-    messages.error(request, "Payment verification failed.")
-    return redirect("house_list")
 def verify_payment(request, reference):
     """Verifies payment with Paystack and updates the database."""
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
@@ -194,13 +174,13 @@ def verify_payment(request, reference):
                 payment.expires_on = now() + timedelta(days=14)  # ✅ Set expiration
                 payment.save()
                 messages.success(request, f"Payment successful! You have access to {payment.location} until {payment.expires_on}.")
-                return redirect("house_list")  # ✅ Redirect to house listings
+                return redirect("house_detail", house_id=House.objects.filter(location=payment.location).first().id)
 
         messages.error(request, "Payment verification failed. Please try again.")
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Error verifying payment: {e}")
 
-    return redirect("initiate_payment", location=payment.location)
+    return redirect("house_list")
 
 from django.contrib.auth import logout
 
