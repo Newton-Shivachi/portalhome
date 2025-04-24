@@ -190,7 +190,7 @@ def verify_payment(request, reference, house_id=None):
 
             if payment:
                 payment.status = "success"
-                payment.expires_on = now() + timedelta(days=14)
+                payment.expires_on = now() + timedelta(days=3)
                 payment.save()
                 messages.success(request, f"Payment successful! You now have access to {payment.location}.")
 
