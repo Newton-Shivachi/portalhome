@@ -120,7 +120,8 @@ def add_house_images(request, house_id):
 @login_required
 def initiate_payment(request, location, house_id=None):
     user = request.user
-    amount = 500 # Set your price here
+    location = unquote(location)  # ✅ Decode URL-encoded location
+    amount = 500  # Set your price here
     reference = str(uuid.uuid4())
 
     # Prevent double payment
@@ -130,6 +131,7 @@ def initiate_payment(request, location, house_id=None):
         status="success",
         expires_on__gte=now()
     ).first()
+
     if existing_payment:
         messages.success(request, f"You already have access to {location} until {existing_payment.expires_on}.")
         if house_id:
