@@ -177,9 +177,12 @@ def initiate_payment(request, location, house_id=None):
 
 PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
 
+@login_required
 def verify_payment(request, reference, house_id=None):
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
     url = f"https://api.paystack.co/transaction/verify/{reference}"
+
+    payment = None  # Initialize payment early for later use
 
     try:
         response = requests.get(url, headers=headers)
@@ -190,22 +193,22 @@ def verify_payment(request, reference, house_id=None):
 
             if payment:
                 payment.status = "success"
-                payment.expires_on = now() + timedelta(days=3)
+                payment.expires_on = now() + timedelta(days=3)  # or 7 days if you prefer
                 payment.save()
-                messages.success(request, f"Payment successful! You now have access to {payment.location}.")
+                messages.success(request, f"✅ Payment successful! You now have access to {payment.location}.")
 
-                # Redirect back to house detail if house_id was provided
                 if house_id:
                     return redirect("house_detail", house_id=house_id)
                 return redirect("house_list")
 
-        messages.error(request, "Payment verification failed.")
-    except requests.exceptions.RequestException as e:
-        messages.error(request, f"Error verifying payment: {e}")
+        messages.error(request, "❌ Payment verification failed.")
 
-    # Redirect back to initiate payment if something goes wrong
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"⚠️ Error verifying payment: {e}")
+
+    # Redirect back to initiate payment if payment exists, otherwise to house list
     if payment:
-        return redirect("initiate_payment", location=payment.location)
+        return redirect("initiate_payment", location=payment.location, house_id=house_id if house_id else None)
     return redirect("house_list")
 
 
