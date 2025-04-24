@@ -81,7 +81,7 @@ def house_detail(request, house_id):
         return redirect('initiate_payment_with_house', location=location, house_id=house_id)
 
     # Proceed to render the house detail page
-    return render(request, 'house_detail.html', {'house': house})
+    return render(request, 'houses/house_detail.html', {'house': house})
 
 @login_required
 def add_house(request):
