@@ -58,22 +58,33 @@ def view_house(request, house_id):
 
 
 ### ✅ HOUSE DETAIL VIEW
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils.timezone import now
+from .models import House, Payment
+
 @login_required
 def house_detail(request, house_id):
     house = get_object_or_404(House, id=house_id)
-    houses_in_location = House.objects.filter(location=house.location).exclude(id=house.id)
-    # Ensure user has a valid, verified payment
+
+    # Ensure the user has a valid, non-expired payment for this location
     user_has_paid = Payment.objects.filter(
         user=request.user, 
-        location=house.location,
-        status="success",  # ✅ Only successful payments
-        expires_on__gte=now()  # ✅ Not expired
+        location=house.location,  
+        expires_on__gte=now()
     ).exists()
 
     if not user_has_paid:
-        return redirect("initiate_payment", house_id=house.id)  # Redirect to pay
+        return redirect("initiate_payment", location=house.location)
 
-    return render(request, "houses/house_detail.html", {"house": house, "user_has_paid": user_has_paid,"houses_in_location": houses_in_location})
+    # Get all houses in the same location
+    houses_in_location = House.objects.filter(location=house.location).exclude(id=house.id)
+
+    return render(request, "houses/house_detail.html", {
+        "house": house,
+        "user_has_paid": user_has_paid,
+        "houses_in_location": houses_in_location
+    })
 
 @login_required
 def add_house(request):
@@ -110,31 +121,22 @@ def add_house_images(request, house_id):
 
 ### ✅ INITIATE PAYSTACK PAYME
 @login_required
-def initiate_payment(request, location, house_id=None):
+def initiate_payment(request, location):
     user = request.user
-    amount = 150  # or whatever your fee is
+    amount = 500  # Amount in currency
     reference = str(uuid.uuid4())
 
-    # ✅ Save current house_id in session to redirect user back after payment
-    if house_id:
-        request.session["current_house_id"] = house_id
-
     # Check if user already has a valid payment
-    existing_payment = Payment.objects.filter(
-        user=user, location=location, status="success", expires_on__gte=now()
-    ).first()
-
-    if existing_payment:
+    existing_payment = Payment.objects.filter(user=user, location=location, status="success").first()
+    if existing_payment and not existing_payment.is_expired():
         messages.success(request, f"You already have access to {location} until {existing_payment.expires_on}.")
-        if house_id:
-            return redirect("house_detail", house_id=house_id)
         return redirect("house_list")
 
     # Paystack Payment Initialization
-    callback_url = request.build_absolute_uri(reverse('verify_payment', args=[reference]))
+    callback_url = request.build_absolute_uri(f'/payment/verify/{reference}/')
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
     data = {
-        "email": user.username,  # Assuming no email field
+        "email": user.username,
         "amount": int(amount * 100),
         "reference": reference,
         "callback_url": callback_url
@@ -145,21 +147,21 @@ def initiate_payment(request, location, house_id=None):
         response_data = response.json()
 
         if response_data.get("status"):
-            # Save the payment record
             Payment.objects.create(
                 user=user,
                 location=location,
                 amount=amount,
                 reference=reference,
-                status="pending",
-                expires_on=None
+                status="pending",  # ✅ Store as pending
+                expires_on=None  # ✅ Set only after success
             )
             return redirect(response_data["data"]["authorization_url"])
 
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Payment could not be initialized. Error: {e}")
-
+    
     return redirect("house_list")
+
 
 PAYSTACK_SECRET_KEY = settings.PAYSTACK_SECRET_KEY
 
@@ -178,28 +180,17 @@ def verify_payment(request, reference):
 
             if payment:
                 payment.status = "success"  # ✅ Mark as successful
-                payment.expires_on = now() + timedelta(days=7)  # ✅ Set expiration 7 days from now
+                payment.expires_on = now() + timedelta(days=14)  # ✅ Set expiration
                 payment.save()
-
-                messages.success(
-                    request,
-                    f"Payment successful! You have access to {payment.location} until {payment.expires_on}."
-                )
-
-                # ✅ Redirect back to the house_detail using session
-                house_id = request.session.get("current_house_id")
-                if house_id:
-                    return redirect("house_detail", house_id=house_id)
-                else:
-                    return redirect("house_list")  # fallback
+                messages.success(request, f"Payment successful! You have access to {payment.location} until {payment.expires_on}.")
+                return redirect("house_list")  # ✅ Redirect to house listings
 
         messages.error(request, "Payment verification failed. Please try again.")
-
     except requests.exceptions.RequestException as e:
         messages.error(request, f"Error verifying payment: {e}")
 
-    # If something failed, try redirecting to the payment page again
-    return redirect("initiate_payment", location=payment.location if payment else "unknown")
+    return redirect("initiate_payment", location=payment.location)
+
 
 from django.contrib.auth import logout
 
