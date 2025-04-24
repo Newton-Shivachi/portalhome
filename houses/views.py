@@ -148,7 +148,7 @@ def initiate_payment(request, location, house_id=None):
 
     headers = {"Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"}
     data = {
-        "email": user.username,
+        "email": f"{user.username}@gmail.com",
         "amount": int(amount * 100),
         "reference": reference,
         "callback_url": callback_url
