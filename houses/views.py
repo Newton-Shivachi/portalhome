@@ -120,7 +120,7 @@ def add_house_images(request, house_id):
 @login_required
 def initiate_payment(request, location, house_id=None):
     user = request.user
-    amount = 150  # Set your price here
+    amount = 500 # Set your price here
     reference = str(uuid.uuid4())
 
     # Prevent double payment
