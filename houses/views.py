@@ -66,25 +66,22 @@ from .models import House, Payment
 @login_required
 def house_detail(request, house_id):
     house = get_object_or_404(House, id=house_id)
+    user = request.user
+    location = house.location
 
-    # Ensure the user has a valid, non-expired payment for this location
-    user_has_paid = Payment.objects.filter(
-        user=request.user, 
-        location=house.location,  
+    existing_payment = Payment.objects.filter(
+        user=user,
+        location=location,
+        status="success",
         expires_on__gte=now()
-    ).exists()
+    ).first()
 
-    if not user_has_paid:
-        return redirect("initiate_payment", location=house.location)
+    if not existing_payment:
+        messages.info(request, "Please complete payment to access this house.")
+        return redirect('initiate_payment_with_house', location=location, house_id=house_id)
 
-    # Get all houses in the same location
-    houses_in_location = House.objects.filter(location=house.location).exclude(id=house.id)
-
-    return render(request, "houses/house_detail.html", {
-        "house": house,
-        "user_has_paid": user_has_paid,
-        "houses_in_location": houses_in_location
-    })
+    # Proceed to render the house detail page
+    return render(request, 'house_detail.html', {'house': house})
 
 @login_required
 def add_house(request):
