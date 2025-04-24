@@ -62,6 +62,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from .models import House, Payment
+from urllib.parse import unquote
 
 @login_required
 def house_detail(request, house_id):
