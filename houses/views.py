@@ -68,25 +68,30 @@ from urllib.parse import unquote
 def house_detail(request, house_id):
     house = get_object_or_404(House, id=house_id)
     user = request.user
+
+    # Normalize location for comparison
     location = house.location.strip().lower()
 
-    # Safely check if user has a valid payment
+    # Case-insensitive search for matching payment
     existing_payment = Payment.objects.filter(
         user=user,
-        location__iexact=location,  # Case-insensitive match
-        status="Success",
+        location__iexact=location,
         expires_on__gte=now()
-    ).first()
+    ).filter(Q(status__iexact="Success")).first()
 
     user_has_paid = existing_payment is not None
 
-    # Fetch all houses in this location except the current one
+    if not user_has_paid:
+        messages.info(request, "To access the full details, pay KSH 500 to 0745770557 and call for the location pin.")
+
+    # Include houses in this location (excluding current house)
     houses_in_location = House.objects.filter(location__iexact=location).exclude(id=house.id)
 
     return render(request, 'houses/house_detail.html', {
         'house': house,
-        'houses_in_location': houses_in_location,
         'user_has_paid': user_has_paid,
+        'houses_in_location': houses_in_location,
+        'location': location,  # Optional, in case you need it in template
     })
 @login_required
 def add_house(request):
