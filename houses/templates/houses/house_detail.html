@@ -9,15 +9,22 @@
 {% if user_has_paid %}
     <p class="text-blue-500 font-semibold pb-2 border-b-2 border-blue-300">📞 {{ house.contact }}</p>
 
-    <!-- Single House Map -->
+    <!-- Location Refresh Button -->
+    <div class="my-4">
+        <button onclick="refreshLocation()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded shadow">
+            📍 Refresh My Location
+        </button>
+        <p id="location-status" class="text-sm text-gray-600 mt-2"></p>
+    </div>
+
+    <!-- Maps -->
     <h3 class="text-2xl font-bold text-gray-800 mb-2 mt-4">House Location:</h3>
     <div id="house-map" class="w-full mb-4" style="height: 300px;"></div>
 
-    <!-- All Houses Map -->
     <h3 class="text-2xl font-bold text-gray-800 mb-2">All Houses in {{ house.location }}:</h3>
     <div id="all-houses-map" class="w-full mb-4" style="height: 400px;"></div>
 
-    <!-- Copy Lat/Long Section -->
+    <!-- Copy Coordinates -->
     <div class="space-y-3">
         {% for h in houses_in_location %}
         <div class="flex items-center space-x-2">
@@ -61,23 +68,24 @@
     </div>
 {% endif %}
 
-<!-- Leaflet JS & CSS -->
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
 {% if user_has_paid %}
 <script>
+let houseMap, allHousesMap, userMarker1, userMarker2;
+
 document.addEventListener("DOMContentLoaded", function () {
-    // First Map: Single house
-    var houseMap = L.map('house-map').setView([{{ house.latitude }}, {{ house.longitude }}], 15);
+    // Map for current house
+    houseMap = L.map('house-map').setView([{{ house.latitude }}, {{ house.longitude }}], 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(houseMap);
     L.marker([{{ house.latitude }}, {{ house.longitude }}]).addTo(houseMap)
-        .bindPopup("{{ house.name }}")
-        .openPopup();
+        .bindPopup("{{ house.name }}").openPopup();
     setTimeout(() => houseMap.invalidateSize(), 500);
 
-    // Second Map: All houses
-    var allHousesMap = L.map('all-houses-map').setView([{{ house.latitude }}, {{ house.longitude }}], 13);
+    // Map for all houses
+    allHousesMap = L.map('all-houses-map').setView([{{ house.latitude }}, {{ house.longitude }}], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(allHousesMap);
 
     {% for h in houses_in_location %}
@@ -86,6 +94,34 @@ document.addEventListener("DOMContentLoaded", function () {
     {% endfor %}
     setTimeout(() => allHousesMap.invalidateSize(), 500);
 });
+
+// Refresh user's location on both maps
+function refreshLocation() {
+    const status = document.getElementById("location-status");
+    if (navigator.geolocation) {
+        status.innerText = "Getting your current location...";
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            status.innerText = `📍 Your Location: ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+
+            if (userMarker1) houseMap.removeLayer(userMarker1);
+            if (userMarker2) allHousesMap.removeLayer(userMarker2);
+
+            userMarker1 = L.marker([lat, lon], {icon: L.icon({iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [25, 25]})})
+                .addTo(houseMap).bindPopup("📍 You are here").openPopup();
+            userMarker2 = L.marker([lat, lon], {icon: L.icon({iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [25, 25]})})
+                .addTo(allHousesMap).bindPopup("📍 You are here");
+
+        }, function (error) {
+            status.innerText = "Failed to get location. Please allow access and try again.";
+        });
+    } else {
+        status.innerText = "Geolocation is not supported by your browser.";
+    }
+}
 </script>
 {% endif %}
 {% endblock %}
+
