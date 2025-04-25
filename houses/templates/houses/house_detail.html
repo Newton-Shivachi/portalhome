@@ -15,8 +15,47 @@
     <!-- Second Map: Shows all houses in this location -->
     <h3 class="text-2xl font-bold text-gray-800 mb-2">All Houses in {{ house.location }}:</h3>
     <div id="all-houses-map" style="height: 400px;"></div>
+<div class="space-y-3">
+    {% for h in houses_in_location %}
+    <div class="flex items-center space-x-2">
+        <input 
+            type="text" 
+            value="{{ h.latitude }}, {{ h.longitude }}" 
+            id="coords-{{ forloop.counter }}" 
+            class="border border-gray-300 px-2 py-1 rounded text-sm w-64"
+            readonly
+        >
+        <button 
+            onclick="copyToClipboard('coords-{{ forloop.counter }}')" 
+            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+        >
+            Copy
+        </button>
+    </div>
+    {% empty %}
+    <p>No houses found in this location.</p>
+    {% endfor %}
+</div>
+
+<script>
+function copyToClipboard(id) {
+    const input = document.getElementById(id);
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile devices
+    document.execCommand("copy");
+    alert("Copied: " + input.value);
+}
+</script>
+
 {% else %}
-    <p><strong>Pay 500 to get acesss to all the houses in this location</strong></p>
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mt-4 rounded">
+        <p class="font-semibold text-lg">🔒 Access Restricted</p>
+        <p>To view the location and contact of this house and others in <strong>{{ house.location }}</strong>, kindly:</p>
+        <ul class="list-disc list-inside mt-2">
+            <li>Pay <strong>KSH 500</strong> to <strong>0745770557</strong></li>
+            <li>Then call the number to receive the exact location pin and contact details</li>
+        </ul>
+    </div>
 {% endif %}
 
 <!-- Include LeafletJS -->
