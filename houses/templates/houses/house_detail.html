@@ -8,44 +8,47 @@
 
 {% if user_has_paid %}
     <p class="text-blue-500 font-semibold pb-2 border-b-2 border-blue-300">📞 {{ house.contact }}</p>
-    <!-- First Map: Shows only the current house -->
-    <h3 class="text-2xl font-bold text-gray-800 mb-2">House Location:</h3>
-    <div id="house-map" style="height: 300px;"></div>
 
-    <!-- Second Map: Shows all houses in this location -->
+    <!-- Single House Map -->
+    <h3 class="text-2xl font-bold text-gray-800 mb-2 mt-4">House Location:</h3>
+    <div id="house-map" class="w-full mb-4" style="height: 300px;"></div>
+
+    <!-- All Houses Map -->
     <h3 class="text-2xl font-bold text-gray-800 mb-2">All Houses in {{ house.location }}:</h3>
-    <div id="all-houses-map" style="height: 400px;"></div>
-<div class="space-y-3">
-    {% for h in houses_in_location %}
-    <div class="flex items-center space-x-2">
-        <input 
-            type="text" 
-            value="{{ h.latitude }}, {{ h.longitude }}" 
-            id="coords-{{ forloop.counter }}" 
-            class="border border-gray-300 px-2 py-1 rounded text-sm w-64"
-            readonly
-        >
-        <button 
-            onclick="copyToClipboard('coords-{{ forloop.counter }}')" 
-            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
-        >
-            Copy
-        </button>
-    </div>
-    {% empty %}
-    <p>No houses found in this location.</p>
-    {% endfor %}
-</div>
+    <div id="all-houses-map" class="w-full mb-4" style="height: 400px;"></div>
 
-<script>
-function copyToClipboard(id) {
-    const input = document.getElementById(id);
-    input.select();
-    input.setSelectionRange(0, 99999); // For mobile devices
-    document.execCommand("copy");
-    alert("Copied: " + input.value);
-}
-</script>
+    <!-- Copy Lat/Long Section -->
+    <div class="space-y-3">
+        {% for h in houses_in_location %}
+        <div class="flex items-center space-x-2">
+            <input 
+                type="text" 
+                value="{{ h.latitude }}, {{ h.longitude }}" 
+                id="coords-{{ forloop.counter }}" 
+                class="border border-gray-300 px-2 py-1 rounded text-sm w-64"
+                readonly
+            >
+            <button 
+                onclick="copyToClipboard('coords-{{ forloop.counter }}')" 
+                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+            >
+                Copy
+            </button>
+        </div>
+        {% empty %}
+        <p>No houses found in this location.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+    function copyToClipboard(id) {
+        const input = document.getElementById(id);
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("Copied: " + input.value);
+    }
+    </script>
 
 {% else %}
     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mt-4 rounded">
@@ -58,29 +61,31 @@ function copyToClipboard(id) {
     </div>
 {% endif %}
 
-<!-- Include LeafletJS -->
+<!-- Leaflet JS & CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
+{% if user_has_paid %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    {% if user_has_paid %}
-        // First Map: Single house
-        var houseMap = L.map('house-map').setView([{{ house.latitude }}, {{ house.longitude }}], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(houseMap);
-        L.marker([{{ house.latitude }}, {{ house.longitude }}]).addTo(houseMap)
-            .bindPopup("{{ house.name }}")
-            .openPopup();
+    // First Map: Single house
+    var houseMap = L.map('house-map').setView([{{ house.latitude }}, {{ house.longitude }}], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(houseMap);
+    L.marker([{{ house.latitude }}, {{ house.longitude }}]).addTo(houseMap)
+        .bindPopup("{{ house.name }}")
+        .openPopup();
+    setTimeout(() => houseMap.invalidateSize(), 500);
 
-        // Second Map: All houses in the same location
-        var allHousesMap = L.map('all-houses-map').setView([{{ house.latitude }}, {{ house.longitude }}], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(allHousesMap);
+    // Second Map: All houses
+    var allHousesMap = L.map('all-houses-map').setView([{{ house.latitude }}, {{ house.longitude }}], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(allHousesMap);
 
-        {% for h in houses_in_location %}
+    {% for h in houses_in_location %}
         L.marker([{{ h.latitude }}, {{ h.longitude }}]).addTo(allHousesMap)
             .bindPopup("<b>{{ h.name }}</b><br><a href='{% url 'view_house' h.id %}'>View Details</a>");
-        {% endfor %}
-    {% endif %}
+    {% endfor %}
+    setTimeout(() => allHousesMap.invalidateSize(), 500);
 });
 </script>
+{% endif %}
 {% endblock %}
