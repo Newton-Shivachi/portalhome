@@ -77,11 +77,15 @@ def house_detail(request, house_id):
         expires_on__gte=now()
     ).first()
 
-    if not existing_payment:
-        messages.info(request, "Please complete payment to access this house.")
+    user_has_paid = existing_payment is not None
 
-    # Proceed to render the house detail page
-    return render(request, 'houses/house_detail.html', {'house': house})
+    if not user_has_paid:
+        messages.info(request, "To access the full details, pay KSH 500 to 0745770557 and call for the location pin.")
+
+    return render(request, 'houses/house_detail.html', {
+        'house': house,
+        'user_has_paid': user_has_paid
+    })
 
 @login_required
 def add_house(request):
