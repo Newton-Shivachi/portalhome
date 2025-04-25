@@ -70,12 +70,12 @@ def house_detail(request, house_id):
     user = request.user
     location = house.location
 
+    # More robust filtering
     existing_payment = Payment.objects.filter(
         user=user,
         location=location,
-        status="Success",
         expires_on__gte=now()
-    ).first()
+    ).filter(Q(status__iexact="success")).first()
 
     user_has_paid = existing_payment is not None
 
@@ -86,7 +86,6 @@ def house_detail(request, house_id):
         'house': house,
         'user_has_paid': user_has_paid
     })
-
 @login_required
 def add_house(request):
     if request.method == "POST":
