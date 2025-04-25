@@ -68,21 +68,20 @@ from urllib.parse import unquote
 def house_detail(request, house_id):
     house = get_object_or_404(House, id=house_id)
     user = request.user
-    location = house.location
+    location = house.location.strip().lower()
 
-    # Check if the user has a valid payment for this location
+    # Safely check if user has a valid payment
     existing_payment = Payment.objects.filter(
         user=user,
-        location=location,
+        location__iexact=location,  # Case-insensitive match
         status="Success",
         expires_on__gte=now()
     ).first()
 
-    # Fetch all houses in this location, optionally excluding current house
-    houses_in_location = House.objects.filter(location=location).exclude(id=house.id)
-
-    # Send whether the user has paid
     user_has_paid = existing_payment is not None
+
+    # Fetch all houses in this location except the current one
+    houses_in_location = House.objects.filter(location__iexact=location).exclude(id=house.id)
 
     return render(request, 'houses/house_detail.html', {
         'house': house,
