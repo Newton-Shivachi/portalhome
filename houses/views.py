@@ -73,7 +73,7 @@ def house_detail(request, house_id):
     existing_payment = Payment.objects.filter(
         user=user,
         location=location,
-        status="success",
+        status="Success",
         expires_on__gte=now()
     ).first()
 
