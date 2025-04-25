@@ -79,7 +79,6 @@ def house_detail(request, house_id):
 
     if not existing_payment:
         messages.info(request, "Please complete payment to access this house.")
-        return redirect('initiate_payment_with_house', location=location, house_id=house_id)
 
     # Proceed to render the house detail page
     return render(request, 'houses/house_detail.html', {'house': house})
