@@ -70,21 +70,24 @@ def house_detail(request, house_id):
     user = request.user
     location = house.location
 
-    # More robust filtering
+    # Check if the user has a valid payment for this location
     existing_payment = Payment.objects.filter(
         user=user,
         location=location,
+        status="Success",
         expires_on__gte=now()
-    ).filter(Q(status__iexact="success")).first()
+    ).first()
 
+    # Fetch all houses in this location, optionally excluding current house
+    houses_in_location = House.objects.filter(location=location).exclude(id=house.id)
+
+    # Send whether the user has paid
     user_has_paid = existing_payment is not None
-
-    if not user_has_paid:
-        messages.info(request, "To access the full details, pay KSH 500 to 0745770557 and call for the location pin.")
 
     return render(request, 'houses/house_detail.html', {
         'house': house,
-        'user_has_paid': user_has_paid
+        'houses_in_location': houses_in_location,
+        'user_has_paid': user_has_paid,
     })
 @login_required
 def add_house(request):
